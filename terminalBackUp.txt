@@ -8,11 +8,14 @@
 #include <set>
 #include <unordered_set>
 #include <stack>
+#include<fstream>
 
-#define NOTUSEDYET  '*'
-#define GENSOME     '|'
-#define SHOWDEBUG true
-#define HIDEDEBUG false
+#define TESTING         true
+#define SUBMIT          false
+#define NOTUSEDYET      '*'
+#define GENSOME         '|'
+#define SHOWDEBUG       true
+#define HIDEDEBUG       false
 #define DISCARDDONTCARE true
 #define CONTAINDONTCARE false
 
@@ -95,41 +98,51 @@ void displayDontCare() {
 	}
 	cout << "end DONTCARE" << endl;
 }
-void initInput(bool debugSignal) {//some thing went wrong here
-	for (int i = 0; i < numInputStrings; i++) {
-		string str = "";
-		char c;
-		bool hasDash = false;
-		for (int j = 0; j < numInputVaraibles; j++) {
-			cin >> c;
-			if (c == '-')
-				hasDash = true;
-			str.push_back(c);
-		}
-		auto onlyOneZero = generateOneNoBar(str,CONTAINDONTCARE,debugSignal);
-		while (!onlyOneZero.empty()){
-			string noBarStr = onlyOneZero.top();
-			onlyOneZero.pop();
-			if (hasDash)
-				dontCareCollector.insert(noBarStr);
-			if (enrollBook.find(noBarStr) != enrollBook.end()) {
-				continue;
-			}
-			int cntBarOne = 0;
+void initInput(string INPUTFILE ,bool debugSignal) {//some thing went wrong here
+	ifstream ifs(INPUTFILE.c_str(),ifstream::in);
+	vector<string> vec;
+	if(ifs.is_open()){
+		ifs>>numInputVaraibles>>numInputStrings;
+		cout<<numInputVaraibles <<" "<<numInputStrings<<endl;
+		for (int i = 0; i < numInputStrings; i++) {
+			string str = "";
+			char c;
+			bool hasDash = false;
 			for (int j = 0; j < numInputVaraibles; j++) {
-				if (noBarStr[j] == '1')cntBarOne++;
-				assert(noBarStr[j] != '-');
+				ifs >> c;
+				if (c == '-')
+					hasDash = true;
+				str.push_back(c);
 			}
-			if (sortedBarOneBuffer.find(cntBarOne) != sortedBarOneBuffer.end()) {
-				sortedBarOneBuffer[cntBarOne].push_back(make_pair(noBarStr, NOTUSEDYET));
+			auto onlyOneZero = generateOneNoBar(str,CONTAINDONTCARE,debugSignal);
+			while (!onlyOneZero.empty()){
+				string noBarStr = onlyOneZero.top();
+				onlyOneZero.pop();
+				if (hasDash)
+					dontCareCollector.insert(noBarStr);
+				if (enrollBook.find(noBarStr) != enrollBook.end()) {
+					continue;
+				}
+				int cntBarOne = 0;
+				for (int j = 0; j < numInputVaraibles; j++) {
+					if (noBarStr[j] == '1')cntBarOne++;
+					assert(noBarStr[j] != '-');
+				}
+				if (sortedBarOneBuffer.find(cntBarOne) != sortedBarOneBuffer.end()) {
+					sortedBarOneBuffer[cntBarOne].push_back(make_pair(noBarStr, NOTUSEDYET));
+				}
+				else {
+					vector<pair<string, char>> vec;
+					vec.push_back(make_pair(noBarStr, NOTUSEDYET));
+					sortedBarOneBuffer.insert(make_pair(cntBarOne, vec));
+				}
+				enrollBook.insert(noBarStr);
 			}
-			else {
-				vector<pair<string, char>> vec;
-				vec.push_back(make_pair(noBarStr, NOTUSEDYET));
-				sortedBarOneBuffer.insert(make_pair(cntBarOne, vec));
-			}
-			enrollBook.insert(noBarStr);
-		}
+		}		
+
+		ifs.close();
+	}else{
+		cout<<"FAIL TO OPEN THE FILE"<<endl;
 	}
 	if (debugSignal) {
 		for (iter = sortedBarOneBuffer.begin(); iter != sortedBarOneBuffer.end(); ++iter) {
@@ -280,29 +293,57 @@ void naiveCross(bool debugSignal) {
 		}
 	}
 }
-void demoResult() {
+void demoResult(string OUTPUTFILE) {
 	int literalCount = 0;
 	for (auto x : res) {
 		for (auto c : x)
 			if (c != '-')
 				literalCount++;
 	}
-	//cout << "the size:= " << res[0].size() << endl;
 	cout << literalCount << endl;
 	cout << res.size() << endl;
 	for (auto x : res)cout << x << endl;
+
+	ofstream ofs;
+	ofs.open(OUTPUTFILE.c_str());
+	if(ofs.is_open()){
+		ofs<<literalCount<<endl;
+		ofs<<res.size()<<endl;
+		for (auto x : res)ofs << x << endl;
+		ofs.close();
+	}
 }
-int main(){
-	cin >> numInputVaraibles >> numInputStrings;
-	initInput(HIDEDEBUG/*debugSignal*/);
+
+int main(int argc, char* argv[]){
+	string inputPath;
+	string outputPath;
+	bool mode=TESTING;
+	if(mode){
+		inputPath = "../verifier/";
+		outputPath = "../verifier/";
+	}else {
+		inputPath = "./";
+		outputPath = "./";
+	}
+	string INPUTFILENAME = argv[1];
+	string OUTPUTFILENAME = argv[2];
+	string INPUTFILE = inputPath + INPUTFILENAME;
+	string OUTPUTFILE = outputPath + OUTPUTFILENAME;
+
+	cout << INPUTFILE<<" and >_< "<<OUTPUTFILE<<endl;
+
+	initInput(INPUTFILE,HIDEDEBUG/*debugSignal*/);
 	int cntIter = 0;
 	while (primaryImplicantGeneration(HIDEDEBUG/*debugSignal*/)) {
+		if(SHOWDEBUG){
 		cout << "#########################################################" << endl;
 		cout << ">? "<< cntIter << " iteration ends above " << endl;
+		}
 		cntIter++;
 	}
 	columnCoverInit(HIDEDEBUG);
 	naiveCross(HIDEDEBUG);
-	demoResult();
+	demoResult(OUTPUTFILE);
+
 	return 0;
 }
