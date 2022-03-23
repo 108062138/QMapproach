@@ -1,0 +1,56 @@
+case00   |   perl: warning: Setting locale failed.
+-
+[success] : score : 11
+case01   |   perl: warning: Setting locale failed.
+-
+[success] : score : 45
+case02   |   perl: warning: Setting locale failed.
+-
+[success] : score : 158
+case03   |   perl: warning: Setting locale failed.
+-
+[success] : score : 646
+case04   |   perl: warning: Setting locale failed.
+-
+[success] : score : 1099
+case05   |   perl: warning: Setting locale failed.
+-
+[success] : score : 1919
+case06   |   perl: warning: Setting locale failed.
+-
+[success] : score : 3960
+case07   |   perl: warning: Setting locale failed.
+[success] : score : 6669
+
+- is a short hand rep. of the following warning:
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LC_PAPER = "lzh_TW",
+        LC_ADDRESS = "lzh_TW",
+        LC_MONETARY = "lzh_TW",
+        LC_NUMERIC = "lzh_TW",
+        LC_TELEPHONE = "lzh_TW",
+        LC_IDENTIFICATION = "lzh_TW",
+        LC_MEASUREMENT = "lzh_TW",
+        LC_TIME = "lzh_TW",
+        LC_NAME = "lzh_TW",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LC_PAPER = "lzh_TW",
+        LC_ADDRESS = "lzh_TW",
+        LC_MONETARY = "lzh_TW",
+        LC_NUMERIC = "lzh_TW",
+        LC_TELEPHONE = "lzh_TW",
+        LC_IDENTIFICATION = "lzh_TW",
+        LC_MEASUREMENT = "lzh_TW",
+        LC_TIME = "lzh_TW",
+        LC_NAME = "lzh_TW",
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
